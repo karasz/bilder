@@ -106,7 +106,7 @@ func (h authHandler) newSession() string {
 		return ""
 	}
 
-	sid = uid.String()
+	sid := uid.String()
 	h.Lock()
 	h.sessions[sid] = nada
 	h.Unlock()
