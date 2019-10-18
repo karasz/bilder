@@ -100,7 +100,13 @@ func (h authHandler) isAuthed(sid string) bool {
 }
 
 func (h authHandler) newSession() string {
-	sid := uuid.NewV1().String()
+	uid, err := uuid.NewV1()
+
+	if err != nil {
+		return ""
+	}
+
+	sid = uid.String()
 	h.Lock()
 	h.sessions[sid] = nada
 	h.Unlock()
@@ -127,7 +133,11 @@ func (h authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sid := h.newSession()
-	http.SetCookie(w, &http.Cookie{Name: cookieBaseName + h.name, Value: sid, MaxAge: 0})
+
+	if sid != "" {
+		http.SetCookie(w, &http.Cookie{Name: cookieBaseName + h.name, Value: sid, MaxAge: 0})
+	}
+
 	h.handler.ServeHTTP(w, r)
 }
 
